@@ -1,35 +1,41 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بلاغ عاجل بوقوع حادث مروري</title>
+    <title>نظام بلاغ الحوادث المرورية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        /* Base Styles & Box Sizing */
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
 
-        /* Root Variables for dynamic colors */
         :root {
-            --h1-after-background: #3498db; /* Default blue for normal accident */
-            --accent-color: #3498db; /* Default accent color for buttons/focus */
-            --border-color: #d1d8df; /* Lighter border color for inputs */
-            --input-bg-color: #fcfdfe; /* Slightly off-white for input backgrounds */
+            --h1-after-background: #3498db;
+            --accent-color: #3498db;
+            --border-color: #d1d8df;
+            --input-bg-color: #fcfdfe;
+            --modal-bg: rgba(0, 0, 0, 0.6);
+            --modal-content-bg: #fefefe;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --success-color: #28a745;
         }
         
         body {
             font-family: 'Cairo', sans-serif;
             margin: 0;
             padding: 25px 20px;
-            background-color: #f2f5f7; /* Lighter, softer background */
-            color: #3f4a56; /* Slightly darker text for better contrast */
+            background-color: #f2f5f7;
+            color: #3f4a56;
             direction: rtl;
             text-align: center;
-            min-height: 100vh;
+            min-height: 10vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -39,13 +45,13 @@
         .container {
             background-color: #ffffff;
             padding: 35px 40px;
-            border-radius: 16px; /* More rounded corners */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Softer, larger shadow */
-            max-width: 900px; /* Slightly wider container */
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            max-width: 900px;
             margin: 25px auto;
-            border: 1px solid #e7eaf0; /* Softer border */
+            border: 1px solid #e7eaf0;
             width: 100%;
-            overflow: hidden; /* Ensures shadows/borders are contained */
+            overflow: hidden;
         }
         
         h1, h2 {
@@ -53,7 +59,7 @@
             text-align: center;
             margin-bottom: 30px;
             font-weight: 700;
-            font-size: 2.4em; /* Slightly larger heading */
+            font-size: 2.4em;
             position: relative;
             line-height: 1.3;
         }
@@ -61,23 +67,24 @@
         h1::after {
             content: '';
             display: block;
-            width: 90px; /* Slightly wider underline */
-            height: 5px; /* Thicker underline */
-            background-color: var(--h1-after-background); /* Dynamic color */
-            margin: 18px auto 0; /* More space below title */
+            width: 90px;
+            height: 5px;
+            background-color: var(--h1-after-background);
+            margin: 18px auto 0;
             border-radius: 3px;
-            transition: background-color 0.4s ease-in-out; /* Smooth color transition */
+            transition: background-color 0.4s ease-in-out;
         }
-        
+
+
         h2 {
             color: #2c3e50;
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 12px;
-            margin-top: 45px; /* More space above sub-headings */
+            margin-top: 45px;
             font-size: 1.7em;
             text-align: right;
-            position: relative; /* For icon positioning */
-            padding-right: 40px; /* Space for icon */
+            position: relative;
+            padding-right: 40px;
         }
 
 
@@ -86,12 +93,12 @@
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--accent-color); /* Use accent color for icons */
+            color: var(--accent-color);
             font-size: 1.2em;
         }
         
         .form-group {
-            margin-bottom: 22px; /* Increased margin for better spacing */
+            margin-bottom: 22px;
             display: flex;
             align-items: center;
             flex-wrap: wrap;
@@ -102,18 +109,18 @@
         
         .form-group label {
             font-weight: 600;
-            margin-left: 15px; /* More space from input */
-            color: #5d6d7e; /* Slightly softer label color */
-            font-size: 1.08em; /* Slightly larger label font */
-            flex-shrink: 0; /* Prevent label from shrinking */
+            margin-left: 15px;
+            color: #5d6d7e;
+            font-size: 1.08em;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
-            gap: 8px; /* Space between label text and icon */
+            gap: 8px;
         }
 
 
         .form-group label .icon {
-            color: #8c9bb0; /* Icon color for labels */
+            color: #8c9bb0;
             font-size: 0.9em;
         }
         
@@ -125,14 +132,14 @@
         .form-group input[list],
         .form-group input[type="tel"] {
             flex: 1;
-            padding: 13px 18px; /* More padding */
-            border: 1px solid var(--border-color); /* Softer border */
-            border-radius: 10px; /* More rounded corners for inputs */
+            padding: 13px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             font-size: 1.05em;
             box-sizing: border-box;
-            background-color: var(--input-bg-color); /* Light background */
+            background-color: var(--input-bg-color);
             transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-            min-width: 200px; /* Ensure inputs don't become too small */
+            min-width: 200px;
         }
         
         .form-group input[type="text"]:focus,
@@ -142,28 +149,29 @@
         .form-group select:focus,
         .form-group input[list]:focus,
         .form-group input[type="tel"]:focus {
-            border-color: var(--accent-color); /* Dynamic border color on focus */
+            border-color: var(--accent-color);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 52, 152, 219), 0.2); /* Softer, accent-colored shadow */
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
             background-color: #ffffff;
         }
         
         textarea#accident-reason-display {
-            min-height: 110px; /* Slightly taller */
+            min-height: 110px;
             resize: vertical;
         }
         
         .car-details {
             margin-top: 25px;
             padding: 20px 30px;
-            border-right: 5px solid var(--accent-color); /* Dynamic border color */
-            background-color: #fdfdfd; /* Lighter background */
+            border-right: 5px solid var(--accent-color);
+            background-color: #fdfdfd;
             border-radius: 12px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06); /* Softer shadow */
-            transition: border-color 0.4s ease-in-out; /* Smooth transition */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            transition: border-color 0.4s ease-in-out;
         }
-        
+
+
         .car-details div {
             margin-bottom: 15px;
         }
@@ -182,11 +190,11 @@
         
         .car-plate-numbers input {
             width: 100%;
-            max-width: 130px; /* Slightly wider */
+            max-width: 130px;
             text-align: center;
             margin: 0 6px;
             padding: 12px 10px;
-            font-size: 1.1em; /* Larger font for plate numbers */
+            font-size: 1.1em;
         }
         
         .car-plate-numbers span {
@@ -198,24 +206,24 @@
         .checkbox-container {
             display: flex;
             align-items: center;
-            margin-bottom: 18px; /* More spacing */
+            margin-bottom: 18px;
             padding: 8px 0;
             font-size: 1.05em;
             justify-content: flex-end;
-            cursor: pointer; /* Indicate clickable area */
+            cursor: pointer;
         }
         
         .checkbox-container input[type="checkbox"],
         .checkbox-container input[type="radio"] {
-            margin-right: 18px; /* More space */
-            width: 24px; /* Larger checkbox */
+            margin-right: 18px;
+            width: 24px;
             height: 24px;
             cursor: pointer;
-            accent-color: var(--accent-color); /* Dynamic accent color */
-            border-radius: 6px; /* Slightly more rounded */
+            accent-color: var(--accent-color);
+            border-radius: 6px;
             border: 2px solid var(--accent-color);
             transition: all 0.2s ease-in-out;
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0;
         }
         
         .checkbox-container label {
@@ -228,7 +236,7 @@
 
         .checkbox-container input[type="checkbox"]:checked,
         .checkbox-container input[type="radio"]:checked {
-            transform: scale(1.05); /* Slight scale on check */
+            transform: scale(1.05);
         }
         
         .footer-note {
@@ -254,31 +262,31 @@
         
         .copy-button, .back-button, .settings-button {
             color: white;
-            padding: 15px 35px; /* More padding */
+            padding: 15px 35px;
             border: none;
-            border-radius: 10px; /* More rounded */
-            font-size: 1.35em; /* Slightly larger font */
+            border-radius: 10px;
+            font-size: 1.35em;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12); /* Softer shadow */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
             display: inline-flex;
             align-items: center;
-            gap: 12px; /* More space for icon */
+            gap: 12px;
             font-weight: 600;
         }
         
         .copy-button {
-            background-color: #28a745; /* Deeper green */
+            background-color: var(--success-color);
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
         }
         
         .copy-button:hover {
             background-color: #218838;
-            transform: translateY(-3px); /* More pronounced lift */
+            transform: translateY(-3px);
         }
         
         .back-button {
-            background-color: #6c757d; /* Darker gray */
+            background-color: #6c757d;
             box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
         }
         
@@ -288,7 +296,7 @@
         }
         
         .settings-button {
-            background-color: #007bff; /* Brighter blue for settings */
+            background-color: #007bff;
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
         }
         
@@ -297,9 +305,33 @@
             transform: translateY(-3px);
         }
         
+        .edit-button {
+            background-color: #ffc107;
+            color: #212529;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .edit-button:hover {
+            background-color: #e0a800;
+            transform: translateY(-2px);
+        }
+        
+        .edit-button:active {
+            transform: translateY(0);
+        }
+        
         .copy-button:active, .back-button:active, .settings-button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Flatter shadow on click */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
 
@@ -313,25 +345,24 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.6); /* Darker overlay */
+            background-color: var(--modal-bg);
             padding: 20px;
             box-sizing: border-box;
-            display: flex; /* Use flexbox for centering */
             align-items: center;
             justify-content: center;
         }
         
         .modal-content {
-            background-color: #fefefe;
-            margin: auto; /* Center with flexbox */
-            padding: 35px; /* More padding */
+            background-color: var(--modal-content-bg);
+            margin: auto;
+            padding: 35px;
             border: 1px solid #ddd;
-            border-radius: 15px; /* More rounded */
+            border-radius: 15px;
             width: 95%;
-            max-width: 650px; /* Slightly wider */
-            box-shadow: 0 8px 25px rgba(0,0,0,0.35); /* Stronger shadow */
+            max-width: 650px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.35);
             position: relative;
-            animation: fadeIn 0.4s ease-out; /* Slightly longer animation */
+            animation: fadeIn 0.4s ease-out;
         }
         
         @keyframes fadeIn {
@@ -342,9 +373,9 @@
         .close-button {
             color: #999;
             float: left;
-            font-size: 32px; /* Larger close button */
+            font-size: 32px;
             font-weight: bold;
-            margin-left: -15px; /* Adjust position */
+            margin-left: -15px;
             line-height: 1;
             transition: color 0.2s ease;
         }
@@ -359,21 +390,21 @@
         .modal-content h3 {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 25px; /* More space */
+            margin-bottom: 25px;
             font-size: 1.6em;
             font-weight: 700;
         }
         
         #report-output {
             width: 100%;
-            height: 350px; /* Taller output area */
-            padding: 18px; /* More padding */
+            height: 350px;
+            padding: 18px;
             border: 1px solid #e0e0e0;
             border-radius: 10px;
-            background-color: #f9fbfd; /* Very light background */
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* Monospace for report */
-            font-size: 1.05em; /* Slightly larger text */
-            line-height: 1.7; /* Better line spacing */
+            background-color: #f9fbfd;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 1.05em;
+            line-height: 1.7;
             white-space: pre-wrap;
             overflow-y: auto;
             resize: vertical;
@@ -382,15 +413,15 @@
         
         .modal-copy-button-container {
             text-align: center;
-            margin-top: 30px; /* More space */
+            margin-top: 30px;
         }
         
         .modal-copy-button {
             background-color: #3498db;
             color: white;
-            padding: 12px 25px; /* More padding */
+            padding: 12px 25px;
             border: none;
-            border-radius: 8px; /* More rounded */
+            border-radius: 8px;
             font-size: 1.15em;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
@@ -411,10 +442,10 @@
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
-            padding: 15px 25px; /* More padding */
+            padding: 15px 25px;
             border-radius: 10px;
             text-align: center;
-            margin-top: 25px; /* More space */
+            margin-top: 25px;
             display: none;
             font-size: 1.1em;
             font-weight: 600;
@@ -424,18 +455,18 @@
         /* Initial Page Styles */
         #initial-page {
             text-align: center;
-            padding: 60px; /* More padding */
+            padding: 60px;
             background-color: #fff;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            max-width: 650px; /* Slightly wider */
+            max-width: 650px;
             width: 100%;
             margin: 0 auto;
         }
         
         #initial-page h1 {
             color: #2c3e50;
-            margin-bottom: 45px; /* More space */
+            margin-bottom: 45px;
         }
         
         #initial-page h1::after {
@@ -443,20 +474,20 @@
         }
         
         .accident-type-option {
-            margin-bottom: 25px; /* More space between options */
+            margin-bottom: 25px;
         }
         
         .accident-type-option button {
             background-color: #3498db;
             color: white;
-            padding: 18px 35px; /* Larger buttons */
+            padding: 18px 35px;
             border: none;
             border-radius: 10px;
-            font-size: 1.3em; /* Larger font */
+            font-size: 1.3em;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            width: 90%; /* Wider buttons */
-            max-width: 350px; /* Max width */
+            width: 90%;
+            max-width: 350px;
             display: block;
             margin: 0 auto;
             font-weight: 600;
@@ -464,19 +495,19 @@
         }
         
         .accident-type-option button.fatal {
-            background-color: #e74c3c; /* Redder red */
+            background-color: var(--danger-color);
         }
         
         .accident-type-option button.injuries {
-            background-color: #f39c12; /* Brighter orange */
+            background-color: var(--warning-color);
         }
         
         .accident-type-option button.normal {
-            background-color: #3498db; /* Clear blue */
+            background-color: #3498db;
         }
         
         .accident-type-option button:hover {
-            transform: translateY(-4px); /* More lift on hover */
+            transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
         
@@ -513,7 +544,7 @@
         .kilometer-mark-group {
             display: flex;
             align-items: center;
-            gap: 8px; /* More space between elements */
+            gap: 8px;
             flex-wrap: wrap;
             position: relative;
             justify-content: flex-end;
@@ -529,22 +560,22 @@
         .input-with-label-bg {
             position: relative;
             flex: 1;
-            min-width: 100px; /* Ensure inputs are not too narrow */
+            min-width: 100px;
         }
 
 
         .input-with-label-bg input {
             width: 100%;
             text-align: center;
-            padding-right: 40px; /* Space for 'متر' */
-            padding-left: 40px; /* Space for 'كيلو' */
+            padding-right: 40px;
+            padding-left: 40px;
         }
 
 
         .input-with-label-bg::before {
             content: attr(data-text);
             position: absolute;
-            right: 12px; /* Position text inside input */
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: #b0b0b0;
@@ -554,7 +585,7 @@
         }
         
         .input-with-label-bg.km::before {
-            left: 12px; /* Position text inside input */
+            left: 12px;
             right: auto;
         }
 
@@ -593,12 +624,12 @@
             margin-top: 20px;
             margin-bottom: 30px;
             justify-content: flex-end;
-            border-top: none; /* No border for internal settings buttons */
+            border-top: none;
             padding-top: 0;
         }
         
         #settings-page .copy-button-container button {
-            padding: 12px 25px; /* Adjust button size */
+            padding: 12px 25px;
             font-size: 1.1em;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
@@ -611,7 +642,7 @@
             background-color: var(--input-bg-color);
             font-size: 1em;
             box-sizing: border-box;
-            min-height: 150px; /* Taller select for list */
+            min-height: 150px;
             outline: none;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -619,7 +650,128 @@
 
         #settings-page select[size]:focus {
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 52, 152, 219), 0.2);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .contractor-select-group {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 10px;
+        }
+        
+        .contractor-select-group select {
+            flex: 1;
+        }
+        
+        .injury-edit-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .injury-edit-group input {
+            flex: 1;
+        }
+        
+        .excel-upload-container {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            background-color: #f8fbff;
+            margin-bottom: 25px;
+        }
+        
+        .excel-upload-container p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        
+        .excel-upload-container .upload-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .excel-upload-container .upload-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .excel-upload-container .file-name {
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #666;
+        }
+        
+        .excel-upload-container .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            font-size: 0.95em;
+            color: #444;
+            text-align: right;
+        }
+        
+        .excel-upload-container .instructions h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .excel-upload-container .instructions ul {
+            text-align: right;
+            padding-right: 20px;
+        }
+        
+        .excel-upload-container .instructions li {
+            margin-bottom: 8px;
+        }
+
+
+        /* Accident Instructions */
+        .accident-instructions {
+            background-color: #fff8e1;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-right: 4px solid #ffc107;
+            font-size: 0.95em;
+        }
+        
+        .accident-instructions h4 {
+            color: #d32f2f;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .accident-instructions ul {
+            padding-right: 20px;
+        }
+        
+        .accident-instructions li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-right: 15px;
+        }
+        
+        .accident-instructions li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            color: #d32f2f;
+            font-size: 1.2em;
         }
 
 
@@ -679,7 +831,7 @@
 
 
             .kilometer-mark-group .input-with-label-bg {
-                width: calc(50% - 15px); /* Adjust width for smaller screens */
+                width: calc(50% - 15px);
                 min-width: unset;
             }
 
@@ -742,8 +894,8 @@
             .input-with-label-bg::before,
             .input-with-label-bg.km::before {
                 font-size: 0.8em;
-                left: 8px; /* Adjust position for smaller screens */
-                right: 8px; /* Adjust position for smaller screens */
+                left: 8px;
+                right: 8px;
             }
             #initial-page button {
                 padding: 15px 25px;
@@ -756,16 +908,28 @@
     <div id="initial-page">
         <h1>الرجاء اختيار نوع الحادث</h1>
         <div class="accident-type-option">
-            <button class="fatal" onclick="startReport('fatal')"><i class="fa-solid fa-triangle-exclamation"></i> حادث وفيات 🔴</button>
+            <button class="fatal" onclick="app.startReport('fatal')"><i class="fa-solid fa-triangle-exclamation"></i> حادث وفيات 🔴</button>
+            <div class="accident-instructions">
+                <h4><i class="fa-solid fa-info-circle"></i> تعليمات الحوادث التي تشملها:</h4>
+                <ul>
+                    <li>حوادث الوفيات</li>
+                    <li>حادث باص او نقل معلمات</li>
+                    <li>حوادث الحيوانات السائبة</li>
+                    <li>حوادث ناقلة مواد بترولية</li>
+                    <li>حوادث دهس</li>
+                    <li>حادثة معدة تابعة للمشروع</li>
+                    <li>حوادث تحويلة على الطرق</li>
+                </ul>
+            </div>
         </div>
         <div class="accident-type-option">
-            <button class="injuries" onclick="startReport('injuries')"><i class="fa-solid fa-hospital-user"></i> حادث إصابات 🟡</button>
+            <button class="injuries" onclick="app.startReport('injuries')"><i class="fa-solid fa-hospital-user"></i> حادث إصابات 🟡</button>
         </div>
         <div class="accident-type-option">
-            <button class="normal" onclick="startReport('normal')"><i class="fa-solid fa-car-burst"></i> حادث عادي 🔵</button>
+            <button class="normal" onclick="app.startReport('normal')"><i class="fa-solid fa-car-burst"></i> حادث عادي 🔵</button>
         </div>
         <div class="accident-type-option">
-            <button class="settings-button" onclick="showSettingsPage()"><i class="fa-solid fa-gear"></i> الإعدادات</button>
+            <button class="settings-button" onclick="app.showSettingsPage()"><i class="fa-solid fa-gear"></i> الإعدادات</button>
         </div>
     </div>
 
@@ -776,7 +940,7 @@
 
         <div class="form-group">
             <label for="report-id"><i class="fa-solid fa-receipt icon"></i> رقم البلاغ في رقابة +:</label>
-            <input type="text" id="report-id" value="">
+            <input type="text" id="report-id" value="508090">
         </div>
 
 
@@ -805,11 +969,11 @@
             <label for="kilometer-mark-m"><i class="fa-solid fa-map-marker-alt icon"></i> العلامة الكيلومترية:</label>
             <span>(</span>
             <div class="input-with-label-bg" data-text="متر">
-                <input type="number" id="kilometer-mark-m" placeholder="">
+                <input type="number" id="kilometer-mark-m" placeholder="" value="350" max="999">
             </div>
             <span>+</span>
             <div class="input-with-label-bg km" data-text="كيلو">
-                <input type="number" id="kilometer-mark-km" placeholder="">
+                <input type="number" id="kilometer-mark-km" placeholder="" value="360">
             </div>
             <span>)</span>
         </div>
@@ -822,7 +986,7 @@
         </div>
         <div class="form-group">
             <label for="location-description"><i class="fa-solid fa-map-marked-alt icon"></i> وصف الموقع :</label>
-            <textarea id="location-description" rows="3"></textarea>
+            <textarea id="location-description" rows="3">أبيار الماشي</textarea>
         </div>
         <div class="form-group">
             <label for="contract-number"><i class="fa-solid fa-file-contract icon"></i> رقم العقد :</label>
@@ -830,18 +994,33 @@
         </div>
         <div class="form-group">
             <label for="contractor-name"><i class="fa-solid fa-user-tie icon"></i> اسم المقاول :</label>
-            <input type="text" id="contractor-name" value="مطلق الغويري للمقاولات">
+            <div class="contractor-select-group">
+                <select id="contractor-name"></select>
+                <button class="edit-button" onclick="app.showContractorModal()">
+                    <i class="fa-solid fa-pen"></i> تعديل
+                </button>
+            </div>
         </div>
 
 
         <h2><span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span> نتيجة الحادث</h2>
         <div class="form-group">
-            <label for="injuries-count"><i class="fa-solid fa-hospital-user icon"></i> عدد الإصابات :</label>
-            <input type="text" id="injuries-count" value="لايوجد">
+            <label for="injuries-count-display"><i class="fa-solid fa-hospital-user icon"></i> عدد الإصابات :</label>
+            <div class="injury-edit-group">
+                <input type="text" id="injuries-count-display" value="لايوجد" readonly>
+                <button class="edit-button" onclick="app.showInjuryModal('injuries')">
+                    <i class="fa-solid fa-pen"></i> تعديل
+                </button>
+            </div>
         </div>
         <div class="form-group">
-            <label for="fatalities-count"><i class="fa-solid fa-person-falling-burst icon"></i> عدد الوفيات :</label>
-            <input type="text" id="fatalities-count" value="لايوجد">
+            <label for="fatalities-count-display"><i class="fa-solid fa-person-falling-burst icon"></i> عدد الوفيات :</label>
+            <div class="injury-edit-group">
+                <input type="text" id="fatalities-count-display" value="لايوجد" readonly>
+                <button class="edit-button" onclick="app.showInjuryModal('fatalities')">
+                    <i class="fa-solid fa-pen"></i> تعديل
+                </button>
+            </div>
         </div>
         <div class="form-group">
             <label for="damages-input"><i class="fa-solid fa-wrench icon"></i> التلفيات:</label>
@@ -855,11 +1034,41 @@
             <input type="tel" id="car-count" min="0" value="2" pattern="[0-9]*" inputmode="numeric">
         </div>
         <div id="car-details-container">
+            <div class="car-details">
+                <h4>السيارة رقم 1</h4>
+                <div class="form-group">
+                    <label for="car-type-1"><i class="fa-solid fa-car-side icon"></i> نوعها :</label>
+                    <input type="text" id="car-type-1" list="car-models-options" placeholder="ادخل نوع المركبة" value="تويوتا كامري">
+                </div>
+                <div class="form-group car-plate-numbers">
+                    <label><i class="fa-solid fa-id-card icon"></i> رقم اللوحة :</label>
+                    <span>(</span>
+                    <input type="text" id="plate-letters-1" placeholder="أحرف" value="ا ح م">
+                    <span>/</span>
+                    <input type="text" id="plate-numbers-1" pattern="[0-9]*" inputmode="numeric" placeholder="أرقام" value="5008">
+                    <span>)</span>
+                </div>
+            </div>
+            <div class="car-details">
+                <h4>السيارة رقم 2</h4>
+                <div class="form-group">
+                    <label for="car-type-2"><i class="fa-solid fa-car-side icon"></i> نوعها :</label>
+                    <input type="text" id="car-type-2" list="car-models-options" placeholder="ادخل نوع المركبة" value="تويوتا كورولا">
+                </div>
+                <div class="form-group car-plate-numbers">
+                    <label><i class="fa-solid fa-id-card icon"></i> رقم اللوحة :</label>
+                    <span>(</span>
+                    <input type="text" id="plate-letters-2" placeholder="أحرف" value="ع ز ز">
+                    <span>/</span>
+                    <input type="text" id="plate-numbers-2" pattern="[0-9]*" inputmode="numeric" placeholder="أرقام" value="6006">
+                    <span>)</span>
+                </div>
+            </div>
         </div>
         <datalist id="car-models-options"></datalist> 
         <div class="form-group">
             <label for="accident-reason-search"><i class="fa-solid fa-file-lines icon"></i> سبب الحادث (ابحث أو اكتب):</label>
-            <input type="text" id="accident-reason-search" list="accident-reason-options" placeholder="ابحث عن سبب أو اكتبه">
+            <input type="text" id="accident-reason-search" list="accident-reason-options" placeholder="ابحث عن سبب أو اكتبه" value="عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني وانقلابها.">
             <datalist id="accident-reason-options"></datalist>
             <label for="accident-reason-display" style="display: none;">السبب:</label> <textarea id="accident-reason-display" rows="4" class="large-input"></textarea>
         </div>
@@ -929,10 +1138,10 @@
 
 
         <div class="copy-button-container">
-            <button class="copy-button" onclick="showReportModal()">
+            <button class="copy-button" onclick="app.showReportModal()">
                 <i class="fa-brands fa-whatsapp"></i> نسخ التقرير للواتساب
             </button>
-            <button class="back-button" onclick="showInitialPage()">
+            <button class="back-button" onclick="app.showInitialPage()">
                 <i class="fa-solid fa-home"></i> العودة للقائمة الرئيسية
             </button>
         </div>
@@ -949,6 +1158,23 @@
 
     <div id="settings-page" class="container" style="display: none;">
         <h1><i class="fa-solid fa-gear"></i> الإعدادات</h1>
+
+
+        <h2><span class="icon"><i class="fa-solid fa-user-tie"></i></span> إدارة المقاولين</h2>
+        <div class="form-group">
+            <label for="new-contractor"><i class="fa-solid fa-plus-circle icon"></i> اسم مقاول جديد:</label>
+            <input type="text" id="new-contractor" placeholder="أدخل اسم مقاول جديد">
+        </div>
+        <div class="copy-button-container">
+            <button class="copy-button" onclick="app.addContractor()">➕ إضافة مقاول</button>
+        </div>
+        <div class="form-group">
+            <label><i class="fa-solid fa-list icon"></i> المقاولون الحاليون:</label>
+            <select id="current-contractors-list" size="5" style="flex: 1; min-height: 120px;"></select>
+        </div>
+        <div class="copy-button-container">
+            <button class="back-button" onclick="app.removeSelectedContractor()">🗑 حذف المحدد</button>
+        </div>
 
 
         <h2><span class="icon"><i class="fa-solid fa-road"></i></span> إدارة الطرق</h2>
@@ -969,14 +1195,37 @@
             </select>
         </div>
         <div class="copy-button-container">
-            <button class="copy-button" onclick="addRoad()">➕ إضافة طريق</button>
+            <button class="copy-button" onclick="app.addRoad()">➕ إضافة طريق</button>
         </div>
         <div class="form-group">
             <label><i class="fa-solid fa-list icon"></i> الطرق الحالية:</label>
             <select id="current-roads-list" size="5" style="flex: 1; min-height: 120px;"></select>
         </div>
         <div class="copy-button-container">
-            <button class="back-button" onclick="removeSelectedRoad()">🗑 حذف المحدد</button>
+            <button class="back-button" onclick="app.removeSelectedRoad()">🗑 حذف المحدد</button>
+        </div>
+
+
+        <h2><span class="icon"><i class="fa-solid fa-file-excel"></i></span> رفع ملف إكسل</h2>
+        <div class="excel-upload-container">
+            <p>ارفع ملف إكسل لتخزين بيانات الطرق والعقود</p>
+            <input type="file" id="excel-file" accept=".xlsx, .xls" style="display: none;">
+            <button class="upload-btn" onclick="document.getElementById('excel-file').click()">
+                <i class="fa-solid fa-file-arrow-up"></i> اختر ملف إكسل
+            </button>
+            <div id="file-name" class="file-name"></div>
+            
+            <div class="instructions">
+                <h4>تعليمات تنسيق ملف الإكسل:</h4>
+                <ul>
+                    <li>يجب أن يحتوي الملف على الأعمدة التالية بالترتيب:</li>
+                    <li>1. رقم العقد</li>
+                    <li>2. رقم الطريق</li>
+                    <li>3. اسم الطريق</li>
+                    <li>4. نوع الطريق</li>
+                    <li>يجب أن تكون البيانات في الورقة الأولى فقط</li>
+                </ul>
+            </div>
         </div>
 
 
@@ -990,14 +1239,14 @@
             <input type="text" id="new-car-model" placeholder="مثال: كامري">
         </div>
         <div class="copy-button-container">
-            <button class="copy-button" onclick="addCarModel()">➕ إضافة مركبة</button>
+            <button class="copy-button" onclick="app.addCarModel()">➕ إضافة مركبة</button>
         </div>
         <div class="form-group">
             <label><i class="fa-solid fa-list icon"></i> المركبات الحالية:</label>
             <select id="current-car-models-list" size="5" style="flex: 1; min-height: 120px;"></select>
         </div>
         <div class="copy-button-container">
-            <button class="back-button" onclick="removeSelectedCarModel()">🗑 حذف المحدد</button>
+            <button class="back-button" onclick="app.removeSelectedCarModel()">🗑 حذف المحدد</button>
         </div>
 
 
@@ -1007,14 +1256,14 @@
             <input type="text" id="new-accident-reason" placeholder="أدخل سبب حادث جديد">
         </div>
         <div class="copy-button-container">
-            <button class="copy-button" onclick="addAccidentReason()">➕ إضافة سبب</button>
+            <button class="copy-button" onclick="app.addAccidentReason()">➕ إضافة سبب</button>
         </div>
         <div class="form-group">
             <label><i class="fa-solid fa-list icon"></i> الأسباب الحالية:</label>
             <select id="current-accident-reasons-list" size="5" style="flex: 1; min-height: 120px;"></select>
         </div>
         <div class="copy-button-container">
-            <button class="back-button" onclick="removeSelectedAccidentReason()">🗑 حذف المحدد</button>
+            <button class="back-button" onclick="app.removeSelectedAccidentReason()">🗑 حذف المحدد</button>
         </div>
 
 
@@ -1024,14 +1273,14 @@
             <input type="text" id="new-damage" placeholder="أدخل وصف تلفيات جديد">
         </div>
         <div class="copy-button-container">
-            <button class="copy-button" onclick="addDamage()">➕ إضافة تلفيات</button>
+            <button class="copy-button" onclick="app.addDamage()">➕ إضافة تلفيات</button>
         </div>
         <div class="form-group">
             <label><i class="fa-solid fa-list icon"></i> التلفيات الحالية:</label>
             <select id="current-damages-list" size="5" style="flex: 1; min-height: 120px;"></select>
         </div>
         <div class="copy-button-container">
-            <button class="back-button" onclick="removeSelectedDamage()">🗑 حذف المحدد</button>
+            <button class="back-button" onclick="app.removeSelectedDamage()">🗑 حذف المحدد</button>
         </div>
 
 
@@ -1041,858 +1290,1184 @@
             <input type="text" id="new-traffic-delay" placeholder="أدخل وصف تباطؤ جديد">
         </div>
         <div class="copy-button-container">
-            <button class="copy-button" onclick="addTrafficDelay()">➕ إضافة تباطؤ</button>
+            <button class="copy-button" onclick="app.addTrafficDelay()">➕ إضافة تباطؤ</button>
         </div>
         <div class="form-group">
             <label><i class="fa-solid fa-list icon"></i> التباطؤ الحالي:</label>
             <select id="current-traffic-delays-list" size="5" style="flex: 1; min-height: 120px;"></select>
         </div>
         <div class="copy-button-container">
-            <button class="back-button" onclick="removeSelectedTrafficDelay()">🗑 حذف المحدد</button>
+            <button class="back-button" onclick="app.removeSelectedTrafficDelay()">🗑 حذف المحدد</button>
         </div>
 
 
         <div class="copy-button-container" style="margin-top: 50px;">
-            <button class="back-button" onclick="showInitialPage()">العودة للقائمة الرئيسية</button>
+            <button class="back-button" onclick="app.showInitialPage()">العودة للقائمة الرئيسية</button>
+        </div>
+    </div>
+
+
+    <div id="contractorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="app.closeContractorModal()">&times;</span>
+            <h3><i class="fa-solid fa-user-tie"></i> إدارة المقاولين</h3>
+            
+            <div class="form-group">
+                <label for="new-contractor-modal"><i class="fa-solid fa-plus-circle icon"></i> اسم مقاول جديد:</label>
+                <input type="text" id="new-contractor-modal" placeholder="أدخل اسم مقاول جديد">
+            </div>
+            <div class="copy-button-container">
+                <button class="copy-button" onclick="app.addContractorFromModal()">➕ إضافة مقاول</button>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa-solid fa-list icon"></i> المقاولون الحاليون:</label>
+                <select id="current-contractors-modal" size="5" style="flex: 1; min-height: 150px;"></select>
+            </div>
+            
+            <div class="copy-button-container">
+                <button class="back-button" onclick="app.removeSelectedContractorFromModal()">🗑 حذف المحدد</button>
+            </div>
+            
+            <div class="copy-button-container">
+                <button class="copy-button" onclick="app.selectContractorFromModal()">✔️ اختيار المقاول</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="injuryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="app.closeInjuryModal()">&times;</span>
+            <h3 id="injury-modal-title"><i class="fa-solid fa-hospital-user"></i> تعديل الإصابات</h3>
+            
+            <div class="form-group">
+                <label for="injury-count-input"><i class="fa-solid fa-notes-medical icon"></i> العدد (رقم أو "لايوجد"):</label>
+                <input type="text" id="injury-count-input" value="لايوجد">
+            </div>
+            
+            <div class="form-group">
+                <label for="injury-details"><i class="fa-solid fa-file-medical icon"></i> التفاصيل (اختياري):</label>
+                <textarea id="injury-details" rows="3" placeholder="أدخل تفاصيل الإصابات (اختياري)"></textarea>
+            </div>
+            
+            <div class="copy-button-container">
+                <button class="copy-button" onclick="app.saveInjuryData()">💾 حفظ البيانات</button>
+            </div>
         </div>
     </div>
 
 
     <div id="reportModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" onclick="closeReportModal()">&times;</span>
+            <span class="close-button" onclick="app.closeReportModal()">&times;</span>
             <h3>التقرير الجاهز للنسخ</h3>
             <textarea id="report-output" readonly></textarea>
             <div class="modal-copy-button-container">
-                <button class="modal-copy-button" onclick="copyTextFromModal()"><i class="fa-solid fa-copy"></i> نسخ النص</button>
+                <button class="modal-copy-button" onclick="app.copyTextFromModal()"><i class="fa-solid fa-copy"></i> نسخ النص</button>
             </div>
         </div>
     </div>
 
 
     <script>
-        let accidentType = 'normal';
-
-
-        const defaultRoads = [{ name: 'مكة المكرمة / المدينة المنورة', number: '15', type: 'سريع' }]; // Added type
-        const defaultAccidentReasons = [
-            "عدم الانتباه أدى إلى انحراف المركبة وانقلابها في الطريق.",
-            "عدم الانتباه أدى إلى انحراف المركبة وانقلابها خارج الطريق.",
-            "عدم الانتباه أدى إلى انحراف خارج الطريق.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني ثم انقلابها خارج الطريق.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني وانقلابها.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز الخرساني",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز الخرساني ثم انقلابها خارج الطريق.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز الخرساني وانقلابها.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في السياج السلكي.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في السياج السلكي وانقلابها.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في السياج السلكي ثم انقلابها خارج الطريق.",
-            "عدم الانتباه أدى إلى انحراف المركبة واصدامها في السياج السلكي ثم انقلابها في الجزيرة الوسطية.",
-            "عدم الانتباه أدى إلى اصطدام المركبة في السياج في الجزيرة الوسطية.",
-            "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الخلف.",
-            "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الجنب.",
-            "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبات رقم 2،3.",
-            "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبات رقم 2،3،4.",
-            "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الخلف ثم انقلابها في الطريق.",
-            "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الخلف ثم انقلابها خارج الطريق.",
-            "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الخلف ثم انقلابها في الجزيرة الوسطية.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة خارج الطريق.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة وانقلابها في الطريق.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة وانقلابها خارج الطريق.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الجنب.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها في الطريق.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها خارج الطريق.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها في الجزيرة الوسطية.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على السياج السلكي.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على السياج السلكي بالجزيرة الوسطية.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على الحاجز المعدني.",
-            "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على الحاجز الخرساني.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة خارج الطريق.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة وانقلابها في الطريق.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة وانقلابها خارج الطريق.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الجنب.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها في الطريق.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها خارج الطريق.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها في الجزيرة الوسطية.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على السياج السلكي.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على السياج السلكي بالجزيرة الوسطية.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على الحاجز المعدني.",
-            "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على الحاجز الخرساني."
-        ];
-        const defaultDamages = ['لايوجد', 'تلفيات بسيطة', 'تلفيات متوسطة', 'تلفيات جسيمة'];
-        const defaultTrafficDelays = [
-            "لا يوجد تباطؤ",
-            "يوجد تباطؤ بسبب إغلاق مسار واحد ( مسار الشاحنات ).",
-            "يوجد تباطؤ بسبب إغلاق مسار واحد ( المسار الأوسط ).",
-            "يوجد تباطؤ بسبب إغلاق مسار واحد ( المسار السريع ).",
-            "يوجد تباطؤ بسبب إغلاق مسارين ( مسار الشاحنات + المسار الأوسط)",
-            "يوجد تباطؤ بسبب إغلاق مسارين ( مسار الشاحنات + المسار السريع )",
-            "يوجد تباطؤ بسبب إغلاق مسارين ( مسار الأوسط + المسار السريع )",
-            "الطريق مغلق بالكامل"
-        ];
-
-
-        const defaultCarModels = []; 
-
-
-        let roads = [];
-        let accidentReasons = [];
-        let damages = [];
-        let trafficDelays = [];
-        let carModels = [];
-
-
-        function loadData(key, defaultValue) {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : defaultValue;
-        }
-
-
-        function saveData(key, data) {
-            localStorage.setItem(key, JSON.stringify(data));
-        }
-
-
-        function populateRoadSelect() {
-            const select = document.getElementById('road-name-select');
-            select.innerHTML = '';
-            roads.forEach(road => {
-                const option = document.createElement('option');
-                option.value = road.number;
-                option.textContent = road.name;
-                option.dataset.type = road.type; // Store road type as a data attribute
-                select.appendChild(option);
-            });
-            if (roads.length > 0) {
-                const currentRoadNumber = document.getElementById('road-number-display').value;
-                const foundRoad = roads.find(road => road.number === currentRoadNumber);
-                if (foundRoad) {
-                    select.value = foundRoad.number;
-                    document.getElementById('road-type').value = foundRoad.type; // Set road type based on selected road
-                } else {
-                    select.value = roads[0].number;
-                    document.getElementById('road-number-display').value = roads[0].number;
-                    document.getElementById('road-type').value = roads[0].type; // Set road type based on first road
-                }
-            } else {
-                document.getElementById('road-number-display').value = '';
-                document.getElementById('road-type').value = 'سريع'; // Default if no roads
-            }
-        }
-
-
-        function populateAccidentReasonsDatalist() {
-            const datalist = document.getElementById('accident-reason-options');
-            datalist.innerHTML = '';
-            accidentReasons.forEach(reason => {
-                const option = document.createElement('option');
-                option.value = reason;
-                datalist.appendChild(option);
-            });
-        }
-
-
-        function populateDamagesDatalist() {
-            const datalist = document.getElementById('damages-options');
-            datalist.innerHTML = '';
-            damages.forEach(damage => {
-                const option = document.createElement('option');
-                option.value = damage;
-                datalist.appendChild(option);
-            });
-        }
-
-
-        function populateTrafficDelaysDatalist() {
-            const datalist = document.getElementById('traffic-delay-options');
-            datalist.innerHTML = '';
-            trafficDelays.forEach(delay => {
-                const option = document.createElement('option');
-                option.value = delay;
-                datalist.appendChild(option);
-            });
-        }
-
-
-        function populateCarModelsDatalist() {
-            const datalist = document.getElementById('car-models-options');
-            datalist.innerHTML = '';
-            carModels.forEach(model => {
-                const option = document.createElement('option');
-                option.value = model;
-                datalist.appendChild(option);
-            });
-        }
-
-
-        function populateSettingsRoadsList() {
-            const select = document.getElementById('current-roads-list');
-            select.innerHTML = '';
-            roads.forEach((road, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = `${road.name} (رقم: ${road.number}, نوع: ${road.type})`;
-                select.appendChild(option);
-            });
-        }
-
-
-        function populateSettingsAccidentReasonsList() {
-            const select = document.getElementById('current-accident-reasons-list');
-            select.innerHTML = '';
-            accidentReasons.forEach((reason, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = reason;
-                select.appendChild(option);
-            });
-        }
-
-
-        function populateSettingsDamagesList() {
-            const select = document.getElementById('current-damages-list');
-            select.innerHTML = '';
-            damages.forEach((damage, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = damage;
-                select.appendChild(option);
-            });
-        }
-
-
-        function populateSettingsTrafficDelaysList() {
-            const select = document.getElementById('current-traffic-delays-list');
-            select.innerHTML = '';
-            trafficDelays.forEach((delay, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = delay;
-                select.appendChild(option);
-            });
-        }
-
-
-        function populateSettingsCarModelsList() {
-            const select = document.getElementById('current-car-models-list');
-            select.innerHTML = '';
-            carModels.forEach((model, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = model;
-                select.appendChild(option);
-            });
-        }
-
-
-        function addRoad() {
-            const nameInput = document.getElementById('new-road-name');
-            const numberInput = document.getElementById('new-road-number');
-            const typeSelect = document.getElementById('new-road-type-setting'); // Get the new road type
-            const newRoadName = nameInput.value.trim();
-            const newRoadNumber = numberInput.value.trim();
-            const newRoadType = typeSelect.value; // Get the selected road type
-
-
-            if (newRoadName && newRoadNumber) {
-                if (!roads.some(road => road.name === newRoadName && road.number === newRoadNumber && road.type === newRoadType)) {
-                    roads.push({ name: newRoadName, number: newRoadNumber, type: newRoadType }); // Include type
-                    saveData('roads', roads);
-                    populateSettingsRoadsList();
-                    populateRoadSelect();
-                    nameInput.value = '';
-                    numberInput.value = '';
-                    typeSelect.value = 'سريع'; // Reset to default
-                } else {
-                    alert('هذا الطريق موجود بالفعل بنفس الاسم والرقم والنوع.');
-                }
-            } else {
-                alert('الرجاء إدخال اسم ورقم الطريق.');
-            }
-        }
-
-
-        function removeSelectedRoad() {
-            const select = document.getElementById('current-roads-list');
-            const selectedIndex = select.value;
-            if (selectedIndex !== null && selectedIndex !== "") {
-                roads.splice(parseInt(selectedIndex), 1);
-                saveData('roads', roads);
-                populateSettingsRoadsList();
-                populateRoadSelect();
-            } else {
-                alert('الرجاء اختيار طريق لحذفه.');
-            }
-        }
-
-
-        function addCarModel() {
-            const companyInput = document.getElementById('new-car-company');
-            const modelInput = document.getElementById('new-car-model');
-            const newCompany = companyInput.value.trim();
-            const newModel = modelInput.value.trim();
-            const fullModelName = `${newCompany} ${newModel}`.trim();
-
-
-            if (newCompany && newModel) {
-                if (!carModels.includes(fullModelName)) {
-                    carModels.push(fullModelName);
-                    saveData('carModels', carModels);
-                    populateSettingsCarModelsList();
-                    populateCarModelsDatalist();
-                    companyInput.value = '';
-                    modelInput.value = '';
-                } else {
-                    alert('هذه المركبة موجودة بالفعل.');
-                }
-            } else {
-                alert('الرجاء إدخال اسم الشركة واسم المركبة.');
-            }
-        }
-
-
-        function removeSelectedCarModel() {
-            const select = document.getElementById('current-car-models-list');
-            const selectedIndex = select.value;
-            if (selectedIndex !== null && selectedIndex !== "") {
-                carModels.splice(parseInt(selectedIndex), 1);
-                saveData('carModels', carModels);
-                populateSettingsCarModelsList();
-                populateCarModelsDatalist();
-            } else {
-                alert('الرجاء اختيار مركبة لحذفها.');
-            }
-        }
-
-
-        function addAccidentReason() {
-            const input = document.getElementById('new-accident-reason');
-            const newReason = input.value.trim();
-            if (newReason && !accidentReasons.includes(newReason)) {
-                accidentReasons.push(newReason);
-                saveData('accidentReasons', accidentReasons);
-                populateSettingsAccidentReasonsList();
-                populateAccidentReasonsDatalist();
-                input.value = '';
-            } else if (accidentReasons.includes(newReason)) {
-                alert('هذا السبب موجود بالفعل.');
-            } else {
-                alert('الرجاء إدخال سبب حادث جديد.');
-            }
-        }
-
-
-        function removeSelectedAccidentReason() {
-            const select = document.getElementById('current-accident-reasons-list');
-            const selectedIndex = select.value;
-            if (selectedIndex !== null && selectedIndex !== "") {
-                accidentReasons.splice(parseInt(selectedIndex), 1);
-                saveData('accidentReasons', accidentReasons);
-                populateSettingsAccidentReasonsList();
-                populateAccidentReasonsDatalist();
-            } else {
-                alert('الرجاء اختيار سبب لحذفه.');
-            }
-        }
-
-
-        function addDamage() {
-            const input = document.getElementById('new-damage');
-            const newDamage = input.value.trim();
-            if (newDamage && !damages.includes(newDamage)) {
-                damages.push(newDamage);
-                saveData('damages', damages);
-                populateSettingsDamagesList();
-                populateDamagesDatalist();
-                input.value = '';
-            } else if (damages.includes(newDamage)) {
-                alert('هذا الوصف موجود بالفعل.');
-            } else {
-                alert('الرجاء إدخال وصف تلفيات جديد.');
-            }
-        }
-
-
-        function removeSelectedDamage() {
-            const select = document.getElementById('current-damages-list');
-            const selectedIndex = select.value;
-            if (selectedIndex !== null && selectedIndex !== "") {
-                damages.splice(parseInt(selectedIndex), 1);
-                saveData('damages', damages);
-                populateSettingsDamagesList();
-                populateDamagesDatalist();
-            } else {
-                alert('الرجاء اختيار تلفيات لحذفها.');
-            }
-        }
-
-
-        function addTrafficDelay() {
-            const input = document.getElementById('new-traffic-delay');
-            const newDelay = input.value.trim();
-            if (newDelay && !trafficDelays.includes(newDelay)) {
-                trafficDelays.push(newDelay);
-                saveData('trafficDelays', trafficDelays);
-                populateSettingsTrafficDelaysList();
-                populateTrafficDelaysDatalist();
-                input.value = '';
-            } else if (trafficDelays.includes(newDelay)) {
-                alert('هذا الوصف موجود بالفعل.');
-            } else {
-                alert('الرجاء إدخال وصف تباطؤ جديد.');
-            }
-        }
-
-
-        function removeSelectedTrafficDelay() {
-            const select = document.getElementById('current-traffic-delays-list');
-            const selectedIndex = select.value;
-            if (selectedIndex !== null && selectedIndex !== "") {
-                trafficDelays.splice(parseInt(selectedIndex), 1);
-                saveData('trafficDelays', trafficDelays);
-                populateSettingsTrafficDelaysList();
-                populateTrafficDelaysDatalist();
-            } else {
-                alert('الرجاء اختيار تباطؤ لحذفه.');
-            }
-        }
-
-
-        function generateCarInputs(count) {
-            const container = document.getElementById('car-details-container');
-            container.innerHTML = '';
-            for (let i = 1; i <= count; i++) {
-                const carDetailHtml = `
-                    <div class="car-details">
-                        <h4>السيارة رقم ${i}</h4>
-                        <div class="form-group">
-                            <label for="car-type-${i}"><i class="fa-solid fa-car-side icon"></i> نوعها :</label>
-                            <input type="text" id="car-type-${i}" list="car-models-options" placeholder="ادخل نوع المركبة">
-                        </div>
-                        <div class="form-group car-plate-numbers">
-                            <label><i class="fa-solid fa-id-card icon"></i> رقم اللوحة :</label>
-                            <span>(</span>
-                            <input type="text" id="plate-letters-${i}" placeholder="أحرف">
-                            <span>/</span>
-                            <input type="text" id="plate-numbers-${i}" pattern="[0-9]*" inputmode="numeric" placeholder="أرقام">
-                            <span>)</span>
-                        </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', carDetailHtml);
-            }
-            populateCarModelsDatalist();
-        }
-
-
-        function showInitialPage() {
-            document.getElementById('initial-page').style.display = 'flex'; // Use flex for centering
-            document.getElementById('report-form-container').style.display = 'none';
-            document.getElementById('settings-page').style.display = 'none';
-            resetFormFields();
-        }
-
-
-        function showReportForm() {
-            document.getElementById('initial-page').style.display = 'none';
-            document.getElementById('report-form-container').style.display = 'block';
-            document.getElementById('settings-page').style.display = 'none';
-            populateRoadSelect();
-            populateAccidentReasonsDatalist();
-            populateDamagesDatalist();
-            populateTrafficDelaysDatalist(); // Ensure this is called
-            populateCarModelsDatalist(); 
-        }
-
-
-        function showSettingsPage() {
-            document.getElementById('initial-page').style.display = 'none';
-            document.getElementById('report-form-container').style.display = 'none';
-            document.getElementById('settings-page').style.display = 'block';
-            populateSettingsRoadsList();
-            populateSettingsAccidentReasonsList();
-            populateSettingsDamagesList();
-            populateSettingsTrafficDelaysList(); // Ensure this is called
-            populateSettingsCarModelsList(); 
-        }
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-            roads = loadData('roads', defaultRoads);
-            accidentReasons = loadData('accidentReasons', defaultAccidentReasons);
-            damages = loadData('damages', defaultDamages);
-            trafficDelays = loadData('trafficDelays', defaultTrafficDelays);
-            carModels = loadData('carModels', defaultCarModels);
-
-
-            populateRoadSelect();
-            populateAccidentReasonsDatalist();
-            populateDamagesDatalist();
-            populateTrafficDelaysDatalist(); // Initial population
-            populateCarModelsDatalist();
-
-
-            const carCountInput = document.getElementById('car-count');
-            const carDetailsContainer = document.getElementById('car-details-container');
-            const dateInput = document.getElementById('date');
-            const dayInput = document.getElementById('day');
-            const accidentReasonSearchInput = document.getElementById('accident-reason-search');
-            const accidentReasonDisplay = document.getElementById('accident-reason-display');
-            const hourInput = document.getElementById('hour');
-            const roadNameSelect = document.getElementById('road-name-select');
-            const roadNumberDisplay = document.getElementById('road-number-display');
-            const roadTypeSelect = document.getElementById('road-type');
-
-
-
-
-            accidentReasonSearchInput.addEventListener('input', function() {
-                accidentReasonDisplay.value = this.value;
-            });
-
-
-            const daysOfWeek = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-
-
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            dateInput.value = `${year}-${month}-${day}`;
-            dayInput.value = daysOfWeek[now.getDay()];
-
-
-            let hours = now.getHours();
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const ampm = hours >= 12 ? 'مساءً' : 'صباحًا';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            const formattedTime = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
-            hourInput.value = formattedTime;
-
-
-            generateCarInputs(parseInt(carCountInput.value));
-
-
-            carCountInput.addEventListener('input', function() {
-                const count = parseInt(this.value);
-                if (!isNaN(count) && count >= 0) {
-                    generateCarInputs(count);
-                } else {
-                    carDetailsContainer.innerHTML = '';
-                }
-            });
-
-
-            dateInput.addEventListener('change', function() {
-                if (this.value) {
-                    const date = new Date(this.value + 'T00:00:00');
-                    dayInput.value = daysOfWeek[date.getDay()];
-                } else {
-                    dayInput.value = '';
-                }
-            });
-
-
-            roadNameSelect.addEventListener('change', function() {
-                roadNumberDisplay.value = this.value;
-                const selectedOption = roadNameSelect.options[roadNameSelect.selectedIndex];
-                roadTypeSelect.value = selectedOption.dataset.type || 'سريع'; // Set road type from data attribute, default to 'سريع'
-            });
-            if (roadNameSelect.options.length > 0) {
-                roadNumberDisplay.value = roadNameSelect.value;
-                const selectedOption = roadNameSelect.options[roadNameSelect.selectedIndex];
-                roadTypeSelect.value = selectedOption.dataset.type || 'سريع';
-            }
-        });
-
-
-        function startReport(type) {
-            accidentType = type;
-            const reportTitle = document.getElementById('report-title');
-            const locationField = document.getElementById('location-field');
-            const injuriesCountInput = document.getElementById('injuries-count');
-            const fatalitiesCountInput = document.getElementById('fatalities-count');
-
-
-            showReportForm(); 
-
-
-            let accentColor = '#3498db'; // Default to normal blue
-            let accentColorRgb = '52, 152, 219'; // Default RGB for normal blue
-
-
-            if (type === 'fatal') {
-                accentColor = '#e74c3c'; // Red for fatal
-                accentColorRgb = '231, 76, 60';
-                locationField.style.display = 'flex';
-                fatalitiesCountInput.value = 'يوجد';
-                injuriesCountInput.value = 'لايوجد';
-            } else if (type === 'injuries') {
-                accentColor = '#f39c12'; // Orange for injuries
-                accentColorRgb = '243, 156, 18';
-                locationField.style.display = 'none';
-                injuriesCountInput.value = 'يوجد';
-                fatalitiesCountInput.value = 'لايوجد';
-            } else { // normal
-                accentColor = '#3498db'; // Blue for normal
-                accentColorRgb = '52, 152, 219';
-                locationField.style.display = 'none';
-                injuriesCountInput.value = 'لايوجد';
-                fatalitiesCountInput.value = 'لايوجد';
+        // البيانات الافتراضية
+        const DEFAULT_DATA = {
+            roads: [
+                { name: 'مكة المكرمة / المدينة المنورة', number: '15', type: 'سريع' },
+                { name: 'الرياض / القصيم', number: '65', type: 'سريع' }
+            ],
+            accidentReasons: [
+                "عدم الانتباه أدى إلى انحراف المركبة وانقلابها في الطريق.",
+                "عدم الانتباه أدى إلى انحراف المركبة وانقلابها خارج الطريق.",
+                "عدم الانتباه أدى إلى انحراف خارج الطريق.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني ثم انقلابها خارج الطريق.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني وانقلابها.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز الخرساني",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز الخرساني ثم انقلابها خارج الطريق.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز الخرساني وانقلابها.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في السياج السلكي.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في السياج السلكي وانقلابها.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في السياج السلكي ثم انقلابها خارج الطريق.",
+                "عدم الانتباه أدى إلى انحراف المركبة واصدامها في السياج السلكي ثم انقلابها في الجزيرة الوسطية.",
+                "عدم الانتباه أدى إلى اصطدام المركبة في السياج في الجزيرة الوسطية.",
+                "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الخلف.",
+                "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الجنب.",
+                "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبات رقم 2،3.",
+                "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبات رقم 2،3،4.",
+                "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الخلف ثم انقلابها في الطريق.",
+                "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الخلف ثم انقلابها خارج الطريق.",
+                "عدم الانتباه أدى إلى اصطدام المركبة رقم 1 في المركبة رقم 2 من الخلف ثم انقلابها في الجزيرة الوسطية.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة خارج الطريق.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة وانقلابها في الطريق.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة وانقلابها خارج الطريق.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الجنب.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها في الطريق.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها خارج الطريق.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها في الجزيرة الوسطية.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على السياج السلكي.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على السياج السلكي بالجزيرة الوسطية.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على الحاجز المعدني.",
+                "انفجار الإطار الأمامي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على الحاجز الخرساني.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة خارج الطريق.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة وانقلابها في الطريق.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة وانقلابها خارج الطريق.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الجنب.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها في الطريق.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها خارج الطريق.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها في الجزيرة الوسطية.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على السياج السلكي.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على السياج السلكي بالجزيرة الوسطية.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على الحاجز المعدني.",
+                "انفجار الإطار الخلفي أدى إلى انحراف المركبة رقم 1 واصطدامها في المركبة رقم 2 من الخلف ثم انقلابها على الحاجز الخرساني."
+            ],
+            damages: ['لايوجد', 'تلفيات بسيطة', 'تلفيات متوسطة', 'تلفيات جسيمة'],
+            trafficDelays: [
+                "لا يوجد تباطؤ",
+                "يوجد تباطؤ بسبب إغلاق مسار واحد ( مسار الشاحنات ).",
+                "يوجد تباطؤ بسبب إغلاق مسار واحد ( المسار الأوسط ).",
+                "يوجد تباطؤ بسبب إغلاق مسار واحد ( المسار السريع ).",
+                "يوجد تباطؤ بسبب إغلاق مسارين ( مسار الشاحنات + المسار الأوسط)",
+                "يوجد تباطؤ بسبب إغلاق مسارين ( مسار الشاحنات + المسار السريع )",
+                "يوجد تباطؤ بسبب إغلاق مسارين ( مسار الأوسط + المسار السريع )",
+                "الطريق مغلق بالكامل"
+            ],
+            carModels: ['تويوتا كامري', 'تويوتا كورولا', 'هيونداي النترا', 'هيونداي اكسنت', 'شيفروليه كروز', 'فورد تورس', 'نيسان صني', 'مرسيدس بنز', 'بي إم دبليو'],
+            contractors: ['مطلق الغويري للمقاولات', 'شركة الجفالي', 'بن لادن للمقاولات']
+        };
+
+
+        class AccidentReportApp {
+            constructor() {
+                this.accidentType = 'normal';
+                this.roads = [];
+                this.accidentReasons = [];
+                this.damages = [];
+                this.trafficDelays = [];
+                this.carModels = [];
+                this.contractors = [];
+                this.currentInjuryType = null;
+                this.injuryDetails = {};
+                
+                this.init();
             }
             
-            // Set dynamic CSS variables
-            document.documentElement.style.setProperty('--h1-after-background', accentColor);
-            document.documentElement.style.setProperty('--accent-color', accentColor);
-            document.documentElement.style.setProperty('--accent-color-rgb', accentColorRgb);
-        }
+            init() {
+                this.loadAllData();
+                this.setupEventListeners();
+                this.setCurrentDateTime();
+                this.updateAllUI();
+                
+                // إعداد رفع ملف إكسل
+                document.getElementById('excel-file').addEventListener('change', (e) => this.handleExcelUpload(e));
 
 
-        function resetFormFields() {
-            document.getElementById('report-id').value = '';
-            document.getElementById('location-text').value = '';
-            
-            const roadSelect = document.getElementById('road-name-select');
-            if (roadSelect.options.length > 0) {
-                roadSelect.value = roadSelect.options[0].value;
-                document.getElementById('road-number-display').value = roadSelect.options[0].value;
-                document.getElementById('road-type').value = roadSelect.options[0].dataset.type || 'سريع'; // Reset road type
-            } else {
-                document.getElementById('road-number-display').value = '';
-                document.getElementById('road-type').value = 'سريع';
+                // Set initial values for testing based on your example
+                document.getElementById('report-id').value = '508090';
+                document.getElementById('road-name-select').value = '15'; // Assuming '15' is the value for "مكة المكرمة / المدينة المنورة"
+                this.updateRoadNumberAndType(); // Call this to set the display values
+                document.getElementById('kilometer-mark-m').value = '350'; // Changed from 1700 to 350
+                document.getElementById('kilometer-mark-km').value = '360';
+                document.getElementById('direction').value = 'رئيسي';
+                document.getElementById('location-description').value = 'أبيار الماشي';
+                document.getElementById('contract-number').value = '404';
+                
+                // Set initial contractor name, assuming 'مطلق الغويري للمقاولات' is in the default data
+                if (this.contractors.includes('مطلق الغويري للمقاولات')) {
+                    document.getElementById('contractor-name').value = 'مطلق الغويري للمقاولات';
+                }
+
+
+                // Initial setup for injuries and fatalities
+                this.injuryDetails = {
+                    injuries: { count: 'لايوجد', details: '' },
+                    fatalities: { count: 'لايوجد', details: '' }
+                };
+                document.getElementById('injuries-count-display').value = 'لايوجد'; 
+                document.getElementById('fatalities-count-display').value = 'لايوجد';
+                
+                document.getElementById('damages-input').value = 'لايوجد';
+                document.getElementById('car-count').value = '2';
+                // Trigger car input generation on load if a value is present
+                this.generateCarInputs(2); 
+
+
+                document.getElementById('accident-reason-search').value = 'عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني وانقلابها.';
+                document.getElementById('accident-reason-display').value = 'عدم الانتباه أدى إلى انحراف المركبة واصدامها في الحاجز المعدني وانقلابها.';
+
+
+                document.getElementById('traffic-delay-input').value = 'لا يوجد تباطؤ';
+                document.getElementById('weather-condition').value = 'صحو';
+                document.getElementById('road-condition').value = 'جيدة';
+                document.getElementById('visibility').value = 'واضحة';
+
+
+                // Initial car details from your example
+                document.getElementById('car-type-1').value = 'تويوتا كامري';
+                document.getElementById('plate-letters-1').value = 'ا ح م';
+                document.getElementById('plate-numbers-1').value = '5008';
+                document.getElementById('car-type-2').value = 'تويوتا كورولا';
+                document.getElementById('plate-letters-2').value = 'ع ز ز';
+                document.getElementById('plate-numbers-2').value = '6006';
             }
-
-
-            document.getElementById('kilometer-mark-m').value = '';
-            document.getElementById('kilometer-mark-km').value = '';
-            document.getElementById('direction').value = 'رئيسي';
-            document.getElementById('location-description').value = '';
-            document.getElementById('contract-number').value = '404';
-            document.getElementById('contractor-name').value = 'مطلق الغويري للمقاولات';
             
-            if (accidentType === 'fatal') {
-                document.getElementById('fatalities-count').value = 'يوجد';
-                document.getElementById('injuries-count').value = 'لايوجد';
-            } else if (accidentType === 'injuries') {
-                document.getElementById('injuries-count').value = 'يوجد';
-                document.getElementById('fatalities-count').value = 'لايوجد';
-            } else {
-                document.getElementById('injuries-count').value = 'لايوجد';
-                document.getElementById('fatalities-count').value = 'لايوجد';
+            loadAllData() {
+                this.roads = this.loadData('roads') || DEFAULT_DATA.roads;
+                this.accidentReasons = this.loadData('accidentReasons') || DEFAULT_DATA.accidentReasons;
+                this.damages = this.loadData('damages') || DEFAULT_DATA.damages;
+                this.trafficDelays = this.loadData('trafficDelays') || DEFAULT_DATA.trafficDelays;
+                this.carModels = this.loadData('carModels') || DEFAULT_DATA.carModels;
+                this.contractors = this.loadData('contractors') || DEFAULT_DATA.contractors;
+                
+                // Initialize injuryDetails with persistent values or defaults
+                this.injuryDetails = this.loadData('injuryDetails') || {
+                    injuries: { count: 'لايوجد', details: '' },
+                    fatalities: { count: 'لايوجد', details: '' }
+                };
             }
-
-
-            document.getElementById('damages-input').value = 'لايوجد'; 
-            document.getElementById('car-count').value = '2';
-            document.getElementById('accident-reason-search').value = '';
-            document.getElementById('accident-reason-display').value = '';
             
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            document.getElementById('date').value = `${year}-${month}-${day}`;
-            const daysOfWeek = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-            document.getElementById('day').value = daysOfWeek[now.getDay()];
-
-
-            let hours = now.getHours();
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const ampm = hours >= 12 ? 'مساءً' : 'صباحًا';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            const formattedTime = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
-            document.getElementById('hour').value = formattedTime;
-
-
-            document.getElementById('traffic-delay-input').value = 'لا يوجد تباطؤ'; 
-            document.getElementById('weather-condition').value = 'صحو';
-            document.getElementById('road-condition').value = 'جيدة';
-            document.getElementById('visibility').value = 'واضحة';
-            document.getElementById('action1').checked = true;
-            document.getElementById('clean-done').checked = true; 
-            document.getElementById('action3').checked = true;
-
-
-            document.getElementById('car-details-container').innerHTML = '';
-            document.getElementById('car-count').dispatchEvent(new Event('input'));
-        }
-
-
-        function collectReportData() {
-            let reportText = "";
-            const locationText = document.getElementById('location-text').value;
-
-
-            if (accidentType === 'fatal') {
-                reportText += `🔴 بلاغ عاجل بوقوع حادث مروري 🔴\n\n`;
-            } else if (accidentType === 'injuries') {
-                reportText += `🟡 بلاغ عاجل بوقوع حادث مروري 🟡\n\n`;
-            } else {
-                reportText += `🔵 بلاغ عاجل بوقوع حادث مروري 🔵\n\n`;
-            }
-
-
-            const getValue = (id) => document.getElementById(id) ? document.getElementById(id).value.trim() || '---' : '---';
-            const getSelectedText = (id) => {
-                const selectElement = document.getElementById(id);
-                return selectElement && selectElement.options.length > 0 ? selectElement.options[selectElement.selectedIndex].text : '---';
-            };
-
-
-            reportText += `🔳 رقم البلاغ في رقابة +: (${getValue('report-id')})\n\n`;
-
-
-            reportText += "📍 معلومات الموقع\n"; 
-            
-            const selectedRoadName = getSelectedText('road-name-select');
-            const selectedRoadNumber = getValue('road-number-display');
-            const selectedRoadType = getSelectedText('road-type');
-
-
-            reportText += `🛣 اسم الطريق : ${selectedRoadName}\n`;
-            reportText += `🛣 رقم الطريق : ${selectedRoadNumber}\n`; 
-            reportText += `🛣 نوع الطريق : ${selectedRoadType}\n`; // Added road type to report
-
-
-            const kmMarkKm = getValue('kilometer-mark-km');
-            const kmMarkM = getValue('kilometer-mark-m');
-            
-            const displayKm = kmMarkKm !== '---' && kmMarkKm !== '' ? kmMarkKm : '_';
-            const displayM = kmMarkM !== '---' && kmMarkM !== '' ? kmMarkM : '_';
-
-
-            reportText += `🛣 العلامة الكيلومترية: (${displayM} + ${displayKm})\n`;
-
-
-            reportText += `🛣 الاتجاه : ${getSelectedText('direction')}\n`;
-            reportText += `🛣 وصف الموقع : ${getValue('location-description')}\n`;
-            reportText += `🛣 رقم العقد : ${getValue('contract-number')}\n`;
-            reportText += `🛣 اسم المقاول : ${getValue('contractor-name')}\n\n`;
-
-
-            reportText += "🛑 نتيجة الحادث\n";
-            reportText += `⛑ عدد الإصابات : ${getValue('injuries-count')}\n`;
-            reportText += `⛑ عدد الوفيات : ${getValue('fatalities-count')}\n`;
-            reportText += `⛑ التلفيات: ${getValue('damages-input')}\n\n`;
-
-
-            const carCount = parseInt(getValue('car-count')) || 0;
-            reportText += `🚙 عدد السيارات : ${carCount}\n`;
-            for (let i = 1; i <= carCount; i++) {
-                const carType = getValue(`car-type-${i}`);
-                const plateLetters = getValue(`plate-letters-${i}`);
-                const plateNumbers = getValue(`plate-numbers-${i}`);
-
-
-                reportText += `${i}: 🚘 نوعها : ${carType}\n`;
-                reportText += `  رقم اللوحة : ( ${plateLetters} / ${plateNumbers} )\n`;
-            }
-            reportText += "\n";
-
-
-            reportText += `📃 سبب الحادث : ${getValue('accident-reason-display')}\n\n`;
-
-
-            const dateValue = document.getElementById('date').value;
-            let formattedDate = '---';
-            if (dateValue && dateValue !== '---') {
-                const dateParts = dateValue.split('-'); //YYYY-MM-DD
-                if (dateParts.length === 3) {
-                    formattedDate = `${dateParts[2]} / ${dateParts[1]} / ${dateParts[0]}`; // DD / MM /YYYY
+            saveData(key, data) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                    return true;
+                } catch (e) {
+                    console.error('فشل في حفظ البيانات:', e);
+                    alert('حدث خطأ أثناء حفظ البيانات. قد يكون تخزين المتصفح ممتلئًا.');
+                    return false;
                 }
             }
-            reportText += `■ الساعة: ${getValue('hour')}\n`;
-            reportText += `■ التاريخ: ${formattedDate}\n`;
-            reportText += `■ اليوم : ${getValue('day')}\n\n`;
-
-
-            reportText += "🗒 معلومات عامة\n";
-            reportText += `🏁 زمن تباطؤ حركة المرور: ${getValue('traffic-delay-input')}\n`;
-            reportText += `🏞 الحالة الجوية : ${getSelectedText('weather-condition')}\n`;
-            reportText += `🛣 حالة الطريق : ${getValue('road-condition')}\n`;
-            reportText += `👓 وضوح الرؤية : ${getValue('visibility')}\n\n`;
-
-
-            reportText += "🚨 الإجراء الذي تم من قبل المقاول\n";
-            let actionsTaken = [];
-            if (document.getElementById('action1').checked) actionsTaken.push("1️⃣ تأمين موقع الحادث.");
             
-            const cleaningStatusRadios = document.getElementsByName('cleaning-status');
-            let selectedCleaningStatus = '';
-            for (const radio of cleaningStatusRadios) {
-                if (radio.checked) {
-                    selectedCleaningStatus = radio.value;
-                    break;
+            loadData(key) {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    console.error('فشل في تحميل البيانات:', e);
+                    return null;
                 }
             }
-            if (selectedCleaningStatus) {
-                actionsTaken.push(`2️⃣ ${selectedCleaningStatus}`);
+            
+            addContractor() {
+                const name = document.getElementById('new-contractor').value.trim();
+                
+                if (!name) {
+                    alert('الرجاء إدخال اسم المقاول');
+                    return;
+                }
+
+
+                if (this.contractors.includes(name)) {
+                    alert('هذا المقاول موجود بالفعل');
+                    return;
+                }
+
+
+                this.contractors.push(name);
+                
+                if (this.saveData('contractors', this.contractors)) {
+                    this.updateContractorsUI();
+                    document.getElementById('new-contractor').value = '';
+                }
             }
+            
+            removeSelectedContractor() {
+                const select = document.getElementById('current-contractors-list');
+                const index = select.selectedIndex;
+                
+                if (index === -1) {
+                    alert('الرجاء اختيار مقاول لحذفه');
+                    return;
+                }
 
 
-            if (document.getElementById('action3').checked) actionsTaken.push("3️⃣ وضع وسائل السلامة.");
+                this.contractors.splice(index, 1);
+                
+                if (this.saveData('contractors', this.contractors)) {
+                    this.updateContractorsUI();
+                }
+            }
+            
+            addRoad() {
+                const name = document.getElementById('new-road-name').value.trim();
+                const number = document.getElementById('new-road-number').value.trim();
+                const type = document.getElementById('new-road-type-setting').value;
 
 
-            if (actionsTaken.length > 0) {
-                actionsTaken.forEach(action => {
-                    reportText += `• ${action} .\n`; 
+                if (!name || !number) {
+                    alert('الرجاء إدخال اسم ورقم الطريق');
+                    return;
+                }
+
+
+                const newRoad = { name, number, type };
+                
+                if (this.roads.some(r => r.name === name && r.number === number && r.type === type)) {
+                    alert('هذا الطريق موجود بالفعل');
+                    return;
+                }
+
+
+                this.roads.push(newRoad);
+                
+                if (this.saveData('roads', this.roads)) {
+                    this.updateRoadsUI();
+                    document.getElementById('new-road-name').value = '';
+                    document.getElementById('new-road-number').value = '';
+                }
+            }
+            
+            removeSelectedRoad() {
+                const select = document.getElementById('current-roads-list');
+                const index = select.selectedIndex;
+                
+                if (index === -1) {
+                    alert('الرجاء اختيار طريق لحذفه');
+                    return;
+                }
+
+
+                this.roads.splice(index, 1);
+                
+                if (this.saveData('roads', this.roads)) {
+                    this.updateRoadsUI();
+                }
+            }
+            
+            addCarModel() {
+                const company = document.getElementById('new-car-company').value.trim();
+                const model = document.getElementById('new-car-model').value.trim();
+                const fullModel = `${company} ${model}`.trim();
+
+
+                if (!company || !model) {
+                    alert('الرجاء إدخال اسم الشركة والنوع');
+                    return;
+                }
+
+
+                if (this.carModels.includes(fullModel)) {
+                    alert('هذا النوع موجود بالفعل');
+                    return;
+                }
+
+
+                this.carModels.push(fullModel);
+                
+                if (this.saveData('carModels', this.carModels)) {
+                    this.updateCarModelsUI();
+                    document.getElementById('new-car-company').value = '';
+                    document.getElementById('new-car-model').value = '';
+                }
+            }
+            
+            removeSelectedCarModel() {
+                const select = document.getElementById('current-car-models-list');
+                const index = select.selectedIndex;
+                
+                if (index === -1) {
+                    alert('الرجاء اختيار مركبة لحذفها');
+                    return;
+                }
+
+
+                this.carModels.splice(index, 1);
+                
+                if (this.saveData('carModels', this.carModels)) {
+                    this.updateCarModelsUI();
+                }
+            }
+            
+            addAccidentReason() {
+                const reason = document.getElementById('new-accident-reason').value.trim();
+
+
+                if (!reason) {
+                    alert('الرجاء إدخال سبب الحادث');
+                    return;
+                }
+
+
+                if (this.accidentReasons.includes(reason)) {
+                    alert('هذا السبب موجود بالفعل');
+                    return;
+                }
+
+
+                this.accidentReasons.push(reason);
+                
+                if (this.saveData('accidentReasons', this.accidentReasons)) {
+                    this.updateAccidentReasonsUI();
+                    document.getElementById('new-accident-reason').value = '';
+                }
+            }
+            
+            removeSelectedAccidentReason() {
+                const select = document.getElementById('current-accident-reasons-list');
+                const index = select.selectedIndex;
+                
+                if (index === -1) {
+                    alert('الرجاء اختيار سبب لحذفه');
+                    return;
+                }
+
+
+                this.accidentReasons.splice(index, 1);
+                
+                if (this.saveData('accidentReasons', this.accidentReasons)) {
+                    this.updateAccidentReasonsUI();
+                }
+            }
+            
+            addDamage() {
+                const damage = document.getElementById('new-damage').value.trim();
+
+
+                if (!damage) {
+                    alert('الرجاء إدخال وصف التلفيات');
+                    return;
+                }
+
+
+                if (this.damages.includes(damage)) {
+                    alert('هذا الوصف موجود بالفعل');
+                    return;
+                }
+
+
+                this.damages.push(damage);
+                
+                if (this.saveData('damages', this.damages)) {
+                    this.updateDamagesUI();
+                    document.getElementById('new-damage').value = '';
+                }
+            }
+            
+            removeSelectedDamage() {
+                const select = document.getElementById('current-damages-list');
+                const index = select.selectedIndex;
+                
+                if (index === -1) {
+                    alert('الرجاء اختيار تلفيات لحذفها');
+                    return;
+                }
+
+
+                this.damages.splice(index, 1);
+                
+                if (this.saveData('damages', this.damages)) {
+                    this.updateDamagesUI();
+                }
+            }
+            
+            addTrafficDelay() {
+                const delay = document.getElementById('new-traffic-delay').value.trim();
+
+
+                if (!delay) {
+                    alert('الرجاء إدخال وصف التباطؤ');
+                    return;
+                }
+
+
+                if (this.trafficDelays.includes(delay)) {
+                    alert('هذا الوصف موجود بالفعل');
+                    return;
+                }
+
+
+                this.trafficDelays.push(delay);
+                
+                if (this.saveData('trafficDelays', this.trafficDelays)) {
+                    this.updateTrafficDelaysUI();
+                    document.getElementById('new-traffic-delay').value = '';
+                }
+            }
+            
+            removeSelectedTrafficDelay() {
+                const select = document.getElementById('current-traffic-delays-list');
+                const index = select.selectedIndex;
+                
+                if (index === -1) {
+                    alert('الرجاء اختيار تباطؤ لحذفه');
+                    return;
+                }
+
+
+                this.trafficDelays.splice(index, 1);
+                
+                if (this.saveData('trafficDelays', this.trafficDelays)) {
+                    this.updateTrafficDelaysUI();
+                }
+            }
+            
+            updateContractorsUI() {
+                const select = document.getElementById('contractor-name');
+                select.innerHTML = '';
+                
+                this.contractors.forEach(contractor => {
+                    const option = document.createElement('option');
+                    option.value = contractor;
+                    option.textContent = contractor;
+                    select.appendChild(option);
                 });
-            } else {
-                reportText += "• لا يوجد إجراءات محددة.\n";
+                
+                if (this.contractors.length > 0) {
+                    // Try to keep the previously selected value, otherwise default to the first
+                    const currentContractor = select.value;
+                    if (this.contractors.includes(currentContractor)) {
+                        select.value = currentContractor;
+                    } else {
+                        select.value = this.contractors[0];
+                    }
+                }
+                
+                // تحديث واجهة الإعدادات
+                const settingsList = document.getElementById('current-contractors-list');
+                settingsList.innerHTML = '';
+                
+                this.contractors.forEach((contractor, i) => {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = contractor;
+                    settingsList.appendChild(option);
+                });
+                
+                // تحديث الواجهة المنبثقة
+                const modalList = document.getElementById('current-contractors-modal');
+                modalList.innerHTML = '';
+                
+                this.contractors.forEach((contractor, i) => {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = contractor;
+                    modalList.appendChild(option);
+                });
             }
-            reportText += "\n";
+            
+            updateRoadsUI() {
+                const roadSelect = document.getElementById('road-name-select');
+                roadSelect.innerHTML = '';
+                
+                this.roads.forEach(road => {
+                    const option = document.createElement('option');
+                    option.value = road.number; // Store road number as value for easier lookup
+                    option.textContent = road.name;
+                    option.dataset.type = road.type;
+                    roadSelect.appendChild(option);
+                });
 
 
-            reportText += "🚧 المرور والسلامة بالمشروع 🚧";
-            return reportText;
-        }
+                // Set initial selection for road-name-select and trigger change event
+                const defaultRoadNumber = '15'; // Default from your example
+                if (this.roads.some(road => road.number === defaultRoadNumber)) {
+                    roadSelect.value = defaultRoadNumber;
+                } else if (this.roads.length > 0) {
+                    roadSelect.value = this.roads[0].number;
+                }
+                this.updateRoadNumberAndType(); // Update display based on selected road
 
 
-        const reportModal = document.getElementById('reportModal');
-        const reportOutput = document.getElementById('report-output');
-        const successMessage = document.getElementById('successMessage');
+                const settingsList = document.getElementById('current-roads-list');
+                settingsList.innerHTML = '';
+                
+                this.roads.forEach((road, i) => {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `${road.name} (${road.number}, ${road.type})`;
+                    settingsList.appendChild(option);
+                });
+            }
 
 
-        function showReportModal() {
-            reportOutput.value = collectReportData();
-            reportModal.style.display = 'flex'; // Use flex for centering
-            successMessage.style.display = 'none';
-        }
+            updateRoadNumberAndType() {
+                const roadSelect = document.getElementById('road-name-select');
+                const selectedOption = roadSelect.options[roadSelect.selectedIndex];
+                if (selectedOption) {
+                    document.getElementById('road-number-display').value = selectedOption.value;
+                    document.getElementById('road-type').value = selectedOption.dataset.type || 'سريع';
+                }
+            }
+            
+            updateCarModelsUI() {
+                const datalist = document.getElementById('car-models-options');
+                datalist.innerHTML = '';
+                
+                this.carModels.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    datalist.appendChild(option);
+                });
 
 
-        function closeReportModal() {
-            reportModal.style.display = 'none';
-        }
+                const settingsList = document.getElementById('current-car-models-list');
+                settingsList.innerHTML = '';
+                
+                this.carModels.forEach((model, i) => {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = model;
+                    settingsList.appendChild(option);
+                });
+            }
+            
+            updateAccidentReasonsUI() {
+                const datalist = document.getElementById('accident-reason-options');
+                datalist.innerHTML = '';
+                
+                this.accidentReasons.forEach(reason => {
+                    const option = document.createElement('option');
+                    option.value = reason;
+                    datalist.appendChild(option);
+                });
 
 
-        function copyTextFromModal() {
-            reportOutput.select();
-            reportOutput.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(reportOutput.value).then(() => {
-                closeReportModal();
-                successMessage.style.display = 'block';
+                const settingsList = document.getElementById('current-accident-reasons-list');
+                settingsList.innerHTML = '';
+                
+                this.accidentReasons.forEach((reason, i) => {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = reason;
+                    settingsList.appendChild(option);
+                });
+            }
+            
+            updateDamagesUI() {
+                const datalist = document.getElementById('damages-options');
+                datalist.innerHTML = '';
+                
+                this.damages.forEach(damage => {
+                    const option = document.createElement('option');
+                    option.value = damage;
+                    datalist.appendChild(option);
+                });
+
+
+                const settingsList = document.getElementById('current-damages-list');
+                settingsList.innerHTML = '';
+                
+                this.damages.forEach((damage, i) => {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = damage;
+                    settingsList.appendChild(option);
+                });
+            }
+            
+            updateTrafficDelaysUI() {
+                const datalist = document.getElementById('traffic-delay-options');
+                datalist.innerHTML = '';
+                
+                this.trafficDelays.forEach(delay => {
+                    const option = document.createElement('option');
+                    option.value = delay;
+                    datalist.appendChild(option);
+                });
+
+
+                const settingsList = document.getElementById('current-traffic-delays-list');
+                settingsList.innerHTML = '';
+                
+                this.trafficDelays.forEach((delay, i) => {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = delay;
+                    settingsList.appendChild(option);
+                });
+            }
+            
+            updateAllUI() {
+                this.updateContractorsUI();
+                this.updateRoadsUI();
+                this.updateCarModelsUI();
+                this.updateAccidentReasonsUI();
+                this.updateDamagesUI();
+                this.updateTrafficDelaysUI();
+            }
+            
+            setCurrentDateTime() {
+                const now = new Date();
+                const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                
+                // التاريخ
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const dayOfMonth = String(now.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${dayOfMonth}`;
+                
+                document.getElementById('date').value = dateStr;
+                document.getElementById('day').value = days[now.getDay()];
+                
+                // الوقت
+                let hours = now.getHours();
+                const mins = String(now.getMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'مساءً' : 'صباحًا';
+                hours = hours % 12 || 12;
+                document.getElementById('hour').value = `${hours}:${mins} ${ampm}`;
+            }
+            
+            updateDayFromDate() {
+                const dateInput = document.getElementById('date');
+                const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                
+                if (dateInput.value) {
+                    const date = new Date(dateInput.value);
+                    document.getElementById('day').value = days[date.getDay()];
+                }
+            }
+            
+            generateCarInputs(count) {
+                const container = document.getElementById('car-details-container');
+                container.innerHTML = '';
+                
+                for (let i = 1; i <= count; i++) {
+                    const carDetailHtml = `
+                        <div class="car-details">
+                            <h4>السيارة رقم ${i}</h4>
+                            <div class="form-group">
+                                <label for="car-type-${i}"><i class="fa-solid fa-car-side icon"></i> نوعها :</label>
+                                <input type="text" id="car-type-${i}" list="car-models-options" placeholder="ادخل نوع المركبة">
+                            </div>
+                            <div class="form-group car-plate-numbers">
+                                <label><i class="fa-solid fa-id-card icon"></i> رقم اللوحة :</label>
+                                <span>(</span>
+                                <input type="text" id="plate-letters-${i}" placeholder="أحرف">
+                                <span>/</span>
+                                <input type="text" id="plate-numbers-${i}" pattern="[0-9]*" inputmode="numeric" placeholder="أرقام">
+                                <span>)</span>
+                            </div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', carDetailHtml);
+                }
+
+
+                // If initial values are set, populate them
+                if (count >= 1 && document.getElementById('car-type-1')) {
+                    document.getElementById('car-type-1').value = 'تويوتا كامري';
+                    document.getElementById('plate-letters-1').value = 'ا ح م';
+                    document.getElementById('plate-numbers-1').value = '5008';
+                }
+                if (count >= 2 && document.getElementById('car-type-2')) {
+                    document.getElementById('car-type-2').value = 'تويوتا كورولا';
+                    document.getElementById('plate-letters-2').value = 'ع ز ز';
+                    document.getElementById('plate-numbers-2').value = '6006';
+                }
+            }
+            
+            setupEventListeners() {
+                document.getElementById('date').addEventListener('change', () => this.updateDayFromDate());
+                
+                document.getElementById('road-name-select').addEventListener('change', () => this.updateRoadNumberAndType());
+                
+                document.getElementById('car-count').addEventListener('input', (e) => {
+                    const count = parseInt(e.target.value) || 0;
+                    this.generateCarInputs(count);
+                });
+                
+                document.getElementById('accident-reason-search').addEventListener('input', (e) => {
+                    document.getElementById('accident-reason-display').value = e.target.value;
+                });
+            }
+            
+            startReport(type) {
+                this.accidentType = type;
+                document.getElementById('initial-page').style.display = 'none';
+                document.getElementById('report-form-container').style.display = 'block';
+                document.getElementById('settings-page').style.display = 'none';
+                
+                // تحديث عنوان التقرير حسب النوع
+                let title = 'بلاغ عاجل بوقوع حادث مروري';
+                let color = '#3498db';
+                
+                if (type === 'fatal') {
+                    title = 'بلاغ عاجل بوقوع حادث وفيات';
+                    color = '#e74c3c';
+                } else if (type === 'injuries') {
+                    title = 'بلاغ عاجل بوقوع حادث إصابات';
+                    color = '#f39c12';
+                }
+                
+                document.getElementById('report-title').textContent = title;
+                document.documentElement.style.setProperty('--h1-after-background', color);
+                document.documentElement.style.setProperty('--accent-color', color);
+                
+                // تحديث عدد الإصابات والوفيات حسب النوع
+                if (type === 'fatal') {
+                    this.injuryDetails.fatalities.count = 'لايوجد';
+                    this.injuryDetails.injuries.count = 'لايوجد';
+                } else if (type === 'injuries') {
+                    this.injuryDetails.injuries.count = 'لايوجد';
+                    this.injuryDetails.fatalities.count = 'لايوجد';
+                } else { // normal accident
+                    this.injuryDetails.injuries.count = 'لايوجد';
+                    this.injuryDetails.fatalities.count = 'لايوجد';
+                }
+                this.updateInjuryFields();
+                
+                // توليد حقول السيارات
+                const carCount = parseInt(document.getElementById('car-count').value) || 0;
+                this.generateCarInputs(carCount);
+            }
+            
+            showSettingsPage() {
+                document.getElementById('initial-page').style.display = 'none';
+                document.getElementById('report-form-container').style.display = 'none';
+                document.getElementById('settings-page').style.display = 'block';
+            }
+            
+            showInitialPage() {
+                document.getElementById('initial-page').style.display = 'flex';
+                document.getElementById('report-form-container').style.display = 'none';
+                document.getElementById('settings-page').style.display = 'none';
+            }
+            
+            showContractorModal() {
+                document.getElementById('contractorModal').style.display = 'flex';
+            }
+            
+            closeContractorModal() {
+                document.getElementById('contractorModal').style.display = 'none';
+            }
+            
+            addContractorFromModal() {
+                const name = document.getElementById('new-contractor-modal').value.trim();
+                
+                if (!name) {
+                    alert('الرجاء إدخال اسم المقاول');
+                    return;
+                }
+
+
+                if (this.contractors.includes(name)) {
+                    alert('هذا المقاول موجود بالفعل');
+                    return;
+                }
+
+
+                this.contractors.push(name);
+                
+                if (this.saveData('contractors', this.contractors)) {
+                    this.updateContractorsUI();
+                    document.getElementById('new-contractor-modal').value = '';
+                }
+            }
+            
+            removeSelectedContractorFromModal() {
+                const select = document.getElementById('current-contractors-modal');
+                const index = select.selectedIndex;
+                
+                if (index === -1) {
+                    alert('الرجاء اختيار مقاول لحذفه');
+                    return;
+                }
+
+
+                this.contractors.splice(index, 1);
+                
+                if (this.saveData('contractors', this.contractors)) {
+                    this.updateContractorsUI();
+                }
+            }
+            
+            selectContractorFromModal() {
+                const select = document.getElementById('current-contractors-modal');
+                const index = select.selectedIndex;
+                
+                if (index === -1) {
+                    alert('الرجاء اختيار مقاول');
+                    return;
+                }
+                
+                document.getElementById('contractor-name').value = this.contractors[index];
+                this.closeContractorModal();
+            }
+            
+            showInjuryModal(type) {
+                this.currentInjuryType = type;
+                const modal = document.getElementById('injuryModal');
+                const title = document.getElementById('injury-modal-title');
+                const input = document.getElementById('injury-count-input');
+                const details = document.getElementById('injury-details');
+                
+                if (type === 'injuries') {
+                    title.innerHTML = '<i class="fa-solid fa-hospital-user"></i> تعديل الإصابات';
+                } else {
+                    title.innerHTML = '<i class="fa-solid fa-person-falling-burst"></i> تعديل الوفيات';
+                }
+                
+                input.value = this.injuryDetails[type].count;
+                details.value = this.injuryDetails[type].details;
+                
+                modal.style.display = 'flex';
+            }
+            
+            closeInjuryModal() {
+                document.getElementById('injuryModal').style.display = 'none';
+            }
+            
+            saveInjuryData() {
+                const countInput = document.getElementById('injury-count-input').value.trim();
+                const details = document.getElementById('injury-details').value.trim();
+                
+                // Allow any input without validation
+                const countValue = countInput;
+
+
+                this.injuryDetails[this.currentInjuryType] = {
+                    count: countValue,
+                    details: details
+                };
+                
+                this.saveData('injuryDetails', this.injuryDetails); // Save injury details
+                this.updateInjuryFields();
+                this.closeInjuryModal();
+            }
+            
+            updateInjuryFields() {
+                document.getElementById('injuries-count-display').value = this.injuryDetails.injuries.count;
+                document.getElementById('fatalities-count-display').value = this.injuryDetails.fatalities.count;
+            }
+            
+            showReportModal() {
+                const modal = document.getElementById('reportModal');
+                const output = document.getElementById('report-output');
+                
+                // توليد التقرير
+                const reportText = this.generateReportText();
+                output.value = reportText;
+                
+                modal.style.display = 'flex';
+            }
+            
+            closeReportModal() {
+                document.getElementById('reportModal').style.display = 'none';
+            }
+            
+            copyTextFromModal() {
+                const output = document.getElementById('report-output');
+                output.select();
+                document.execCommand('copy');
+                
+                const successMsg = document.getElementById('successMessage');
+                successMsg.style.display = 'block';
                 setTimeout(() => {
-                    successMessage.style.display = 'none';
+                    successMsg.style.display = 'none';
                 }, 3000);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                alert("حدث خطأ أثناء النسخ. يرجى المحاولة مرة أخرى.");
-            });
-        }
+            }
+            
+            handleExcelUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                const fileName = document.getElementById('file-name');
+                fileName.textContent = `تم اختيار: ${file.name}`;
+                
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                        
+                        if (jsonData.length === 0) {
+                            alert('ملف الإكسل لا يحتوي على بيانات');
+                            return;
+                        }
+                        
+                        // معالجة البيانات واستخراج الطرق والعقود
+                        const newRoads = [];
+                        const contractNumbers = new Set();
+                        
+                        jsonData.forEach(row => {
+                            const contractNumber = String(row['رقم العقد'] || row['Contract'] || '');
+                            const roadNumber = String(row['رقم الطريق'] || row['Number'] || '');
+                            const roadName = row['اسم الطريق'] || row['Name'] || '';
+                            const roadType = row['نوع الطريق'] || row['Type'] || 'سريع';
+                            
+                            if (roadName && roadNumber) {
+                                // Prevent duplicates based on name, number, and type
+                                if (!this.roads.some(r => r.name === roadName && r.number === roadNumber && r.type === roadType)) {
+                                    newRoads.push({
+                                        name: roadName,
+                                        type: roadType,
+                                        number: roadNumber
+                                    });
+                                }
+                            }
+                            
+                            if (contractNumber) {
+                                contractNumbers.add(contractNumber);
+                            }
+                        });
+                        
+                        // تحديث قائمة الطرق
+                        if (newRoads.length > 0) {
+                            this.roads = [...this.roads, ...newRoads];
+                            this.saveData('roads', this.roads);
+                            this.updateRoadsUI();
+                        }
+                        
+                        // تحديث حقل رقم العقد إذا كان هناك أرقام عقود
+                        if (contractNumbers.size > 0) {
+                            const contractField = document.getElementById('contract-number');
+                            if (!contractField.value || contractField.value === '404') { // Only update if empty or default
+                                contractField.value = Array.from(contractNumbers).join(', ');
+                            }
+                        }
+                        
+                        alert(`تم تحميل ${newRoads.length} طريق من ملف الإكسل`);
+                        
+                    } catch (error) {
+                        console.error('حدث خطأ أثناء معالجة ملف الإكسل:', error);
+                        alert('حدث خطأ أثناء معالجة ملف الإكسل. يرجى التأكد من تنسيق الملف.');
+                    }
+                };
+                
+                reader.readAsArrayBuffer(file);
+            }
+            
+            generateReportText() {
+                // جمع بيانات التقرير من النموذج
+                const reportId = document.getElementById('report-id').value;
+                const roadName = document.getElementById('road-name-select').options[document.getElementById('road-name-select').selectedIndex]?.textContent || '';
+                const roadNumber = document.getElementById('road-number-display').value;
+                const roadType = document.getElementById('road-type').value;
+                const km = document.getElementById('kilometer-mark-km').value || '0';
+                const m = document.getElementById('kilometer-mark-m').value || '0';
+                const direction = document.getElementById('direction').value;
+                const locationDesc = document.getElementById('location-description').value;
+                const contractNumber = document.getElementById('contract-number').value;
+                const contractorName = document.getElementById('contractor-name').value;
+                
+                const injuriesCount = this.injuryDetails.injuries.count;
+                const injuriesDetails = this.injuryDetails.injuries.details;
+                const fatalitiesCount = this.injuryDetails.fatalities.count;
+                const fatalitiesDetails = this.injuryDetails.fatalities.details;
+                
+                const damages = document.getElementById('damages-input').value;
+                const carCount = parseInt(document.getElementById('car-count').value) || 0;
+                const accidentReason = document.getElementById('accident-reason-display').value;
+                const hour = document.getElementById('hour').value;
+                const dateInput = document.getElementById('date').value;
+                const day = document.getElementById('day').value;
+                const trafficDelay = document.getElementById('traffic-delay-input').value;
+                const weather = document.getElementById('weather-condition').value;
+                const roadCondition = document.getElementById('road-condition').value;
+                const visibility = document.getElementById('visibility').value;
 
 
-        window.onclick = function(event) {
-            if (event.target == reportModal) {
-                closeReportModal();
+                // Format the date to day / month / year
+                let formattedDate = '';
+                if (dateInput) {
+                    const dateParts = dateInput.split('-'); // YYYY-MM-DD
+                    if (dateParts.length === 3) {
+                        formattedDate = `${dateParts[2]} / ${dateParts[1]} / ${dateParts[0]}`; // DD / MM / YYYY
+                    }
+                }
+                
+                // جمع بيانات السيارات
+                const cars = [];
+                for (let i = 1; i <= carCount; i++) {
+                    const type = document.getElementById(`car-type-${i}`).value;
+                    const letters = document.getElementById(`plate-letters-${i}`).value;
+                    const numbers = document.getElementById(`plate-numbers-${i}`).value;
+                    
+                    cars.push({
+                        type,
+                        plate: letters && numbers ? `( ${letters} / ${numbers} )` : ''
+                    });
+                }
+                
+                // جمع الإجراءات
+                const actions = [];
+                if (document.getElementById('action1').checked) {
+                    actions.push('• 1️⃣ تأمين موقع الحادث .');
+                }
+                
+                const cleaningStatus = document.querySelector('input[name="cleaning-status"]:checked')?.value;
+                if (cleaningStatus) {
+                    actions.push(`• 2️⃣ ${cleaningStatus}`);
+                }
+                
+                if (document.getElementById('action3').checked) {
+                    actions.push('• 3️⃣ وضع وسائل السلامة .');
+                }
+                
+                // بناء نص التقرير بالصيغة المطلوبة
+                let report = `🟡 بلاغ عاجل بوقوع حادث مروري 🟡\n\n`;
+                report += `🔳 رقم البلاغ في رقابة +: (${reportId})\n\n`;
+                
+                report += `📍 معلومات الموقع\n`;
+                report += `🛣 اسم الطريق : ${roadName}\n`;
+                report += `🛣 نوع الطريق : ${roadType}\n`;
+                report += `🛣 رقم الطريق : ${roadNumber}\n`;
+                report += `🛣 العلامة الكيلومترية: (${km} + ${m})\n`;
+                report += `🛣 الاتجاه : ${direction}\n`;
+                report += `🛣 وصف الموقع : ${locationDesc}\n`;
+                report += `🛣 رقم العقد : ${contractNumber}\n`;
+                report += `🛣 اسم المقاول : ${contractorName}\n\n`;
+                
+                report += `🛑 نتيجة الحادث\n`;
+                report += `⛑ عدد الإصابات : ${injuriesCount}\n`;
+                // Add injury details if available and not 'لايوجد'
+                if (injuriesCount !== 'لايوجد' && injuriesDetails) {
+                    report += `  (تفاصيل: ${injuriesDetails})\n`;
+                }
+                report += `⛑ عدد الوفيات : ${fatalitiesCount}\n`;
+                // Add fatality details if available and not 'لايوجد'
+                if (fatalitiesCount !== 'لايوجد' && fatalitiesDetails) {
+                    report += `  (تفاصيل: ${fatalitiesDetails})\n`;
+                }
+                report += `⛑ التلفيات: ${damages}\n\n`;
+                
+                report += `🚙 عدد السيارات : ${carCount}\n`;
+                cars.forEach((car, i) => {
+                    report += `${i + 1}: 🚘 نوعها : ${car.type}\n`;
+                    report += `  رقم اللوحة : ${car.plate}\n`;
+                });
+                if (cars.length === 0) {
+                     report += `  لا يوجد سيارات متورطة\n`;
+                }
+                report += `\n`;
+
+
+                report += `📃 سبب الحادث : ${accidentReason}\n\n`;
+                
+                report += `■ الساعة: ${hour}\n`;
+                report += `■ التاريخ: ${formattedDate}\n`;
+                report += `■ اليوم : ${day}\n\n`;
+                
+                report += `🗒 معلومات عامة\n`;
+                report += `🏁 زمن تباطؤ حركة المرور: ${trafficDelay}\n`;
+                report += `🏞 الحالة الجوية : ${weather}\n`;
+                report += `🛣 حالة الطريق : ${roadCondition}\n`;
+                report += `👓 وضوح الرؤية : ${visibility}\n\n`;
+                
+                report += `🚨 الإجراء الذي تم من قبل المقاول\n`;
+                actions.forEach(action => {
+                    report += `${action}\n`;
+                });
+                
+                report += `\n🚧 المرور والسلامة بالمشروع 🚧`;
+                
+                return report;
             }
         }
+
+
+        // تهيئة التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new AccidentReportApp();
+            app.updateRoadNumberAndType(); // Ensure road number and type are set on load
+        });
     </script>
 </body>
 </html>
